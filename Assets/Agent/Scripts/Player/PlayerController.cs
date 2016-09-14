@@ -5,6 +5,7 @@ public class PlayerController : Agent {
 
     public Camera cam;
     public MouseLook mouseLook = new MouseLook( );
+    public bool canLook = false;
 
     // Use this for initialization
     new void Start( ) {
@@ -39,7 +40,7 @@ public class PlayerController : Agent {
         // get the rotation before it's changed
         float oldYRotation = transform.eulerAngles.y;
 
-        mouseLook.LookRotation( transform, cam.transform );
+        if(canLook) mouseLook.LookRotation( transform, cam.transform );
 
         if( m_IsGrounded || advancedSettings.airControl ) {
             // Rotate the rigidbody velocity to match the new direction that the character is looking

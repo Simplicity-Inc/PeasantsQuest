@@ -126,11 +126,12 @@ public class Slot : MonoBehaviour, IPointerClickHandler {
     /// <summary>
     /// Deletes the stuff in the slot
     /// </summary>
-    public void ClearSlot( ) {
+    public void ClearSlot( )
+    {
+        // Change icon to the defaults
+        ChangeSprite(slotEmpty, slotHighlight);
         // Clear the stack
         items.Clear( );
-        // Change icon to the defaults
-        ChangeSprite( slotEmpty, slotHighlight );
         // Update the text
         stackText.text = string.Empty;
     }

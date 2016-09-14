@@ -84,7 +84,7 @@ public class Inventory : MonoBehaviour {
     public float fadeTime;
 
     public static bool Opened {
-        get { return canvasGroup.alpha == 1; }
+        get { return canvasGroup.alpha > 0; }
     }
 
     void Start( ) {
@@ -98,14 +98,25 @@ public class Inventory : MonoBehaviour {
         // If we left click
         if( Input.GetMouseButtonUp( 0 ) ) {
             // And its a valid place
-            if( !eventSystem.IsPointerOverGameObject( -1 ) && from != null ) {
+            if (!eventSystem.IsPointerOverGameObject(-1) && from != null)
+            {
                 // Reset things
-                from.GetComponent<Image>( ).color = Color.white;
-                from.ClearSlot( );
-                Destroy( GameObject.Find( "Hover" ) );
+                from.GetComponent<Image>().color = Color.white;
+                from.ClearSlot();
+                Destroy(GameObject.Find("Hover"));
                 to = null;
                 from = null;
                 emptySlots++;
+            }
+            else if (!eventSystem.IsPointerOverGameObject(-1) && GameObject.Find("Hover")) {
+                Debug.Log("Here");
+                moveSlot.ClearSlot();
+                Destroy(GameObject.Find("Hover"));
+                if (from != null)
+                    if(from.IsEmpty)
+                        emptySlots++; 
+                to = null;
+                from = null;
             }
         }
 
@@ -168,6 +179,10 @@ public class Inventory : MonoBehaviour {
                 // Add it
                 inventoryInfo.allSlots.Add( newSlot );
             }
+        float tmp = fadeTime;
+        fadeTime = 0;
+        StartCoroutine("FadeOut");
+        fadeTime = tmp;
     }
 
     /// <summary>
@@ -236,6 +251,7 @@ public class Inventory : MonoBehaviour {
     /// <param name="clicked">Item stack we clicked</param>
     public void MoveItem( GameObject clicked ) {
         Inventory.clicked = clicked;
+        Destroy(GameObject.Find("Hover"));
 
         if( !moveSlot.IsEmpty ) {
             Slot tmp = clicked.GetComponent<Slot>( );
@@ -245,6 +261,7 @@ public class Inventory : MonoBehaviour {
                 Destroy( GameObject.Find( "Hover" ) );
             } else if( !tmp.IsEmpty && moveSlot.CurrentItem.itemType == tmp.CurrentItem.itemType && tmp.CanStack ) {
                 MergeStack( moveSlot, tmp );
+                Destroy( GameObject.Find( "Hover" ) );
             }
             // If the from is null check if we can make the clicked object it
         } else if( from == null && Opened && !( Input.GetKey( KeyCode.LeftShift ) || Input.GetKey( KeyCode.RightShift ) ) ) {
@@ -350,6 +367,10 @@ public class Inventory : MonoBehaviour {
             splitAmount = maxStackCount;
 
         stackText.text = splitAmount.ToString( );
+    }
+
+    public void CloseStackBox() {
+        selectStackSize.SetActive(false);
     }
 
     /// <summary>
